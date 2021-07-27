@@ -1,7 +1,38 @@
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 30, bottom: 90, left: 40},
     width = 1500 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 600 - margin.top - margin.bottom;
+
+var tooltip = d3.select("#my_dataviz")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "#f8f8ff")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+    .style("width", "auto")
+    .style("position", "absolute")
+    .style("font-size", "14px")
+
+ var mouseover = function(d) {
+    var formatDecimal = d3.format(",.3f");
+    var stateName = d.State;
+    var percentageVaccinated = formatDecimal(d.PercentageVaccinated);
+    tooltip
+        .html("State: " + stateName + "<br>" + "Percentage Vaccinated: " + percentageVaccinated + "%")
+        .style("opacity", 1)
+  }
+  var mousemove = function(d) {
+    tooltip
+      .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+      .style("top", (d3.mouse(this)[1]) + "px")
+  }
+  var mouseleave = function(d) {
+    tooltip
+      .style("opacity", 0)
+  }
 
 // append the svg object to the body of the page
 var svg = d3.select("#my_dataviz")
@@ -16,9 +47,9 @@ var svg = d3.select("#my_dataviz")
 d3.csv("https://raw.githubusercontent.com/madhusivaraj/data-visualization/main/Narrative%20Visualization/data/VaccinationData.csv?token=AJ4IWW5TC7TGHLS2ARVHHN3BBDEE6", function(data) {
 
     data.sort(function(b, a) {
-        return a.Value - b.Value;
+        return a.PercentageVaccinated - b.PercentageVaccinated;
       });
-      
+
 // X axis
 var x = d3.scaleBand()
   .range([ 0, width ])
@@ -33,7 +64,7 @@ svg.append("g")
 
 // Add Y axis
 var y = d3.scaleLinear()
-  .domain([0, 100])
+  .domain([0, 70])
   .range([ height, 0]);
 svg.append("g")
   .call(d3.axisLeft(y));
@@ -45,10 +76,14 @@ svg.selectAll("mybar")
   .append("rect")
     .attr("x", function(d) { return x(d.State); })
     .attr("width", x.bandwidth())
-    .attr("fill", "#69b3a2")
+    .attr("fill", "#FFC875")
     // no bar at the beginning thus:
     .attr("height", function(d) { return height - y(0); }) // always equal to 0
     .attr("y", function(d) { return y(0); })
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseleave", mouseleave)
+    
 
 // Animation
 svg.selectAll("rect")
