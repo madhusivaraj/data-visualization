@@ -14,14 +14,18 @@ var tooltip = d3.select("#my_dataviz")
     .style("padding", "10px")
     .style("width", "auto")
     .style("position", "absolute")
-    .style("font-size", "14px")
+    .style("font-size", "13px")
 
  var mouseover = function(d) {
     var formatDecimal = d3.format(",.3f");
-    var stateName = d.State;
+    var stateName = d.state;
     var percentageVaccinated = formatDecimal(d.PercentageVaccinated);
+    var rank = d.Rank;
     tooltip
-        .html("State: " + stateName + "<br>" + "Percentage Vaccinated: " + percentageVaccinated + "%")
+        .html("State: " + stateName
+        + "<br>" + "Vaccination Rank: " + rank
+        + "<br>" + "Percentage Vaccinated: " + percentageVaccinated + "%"
+        )
         .style("opacity", 1)
   }
   var mousemove = function(d) {
@@ -44,7 +48,7 @@ var svg = d3.select("#my_dataviz")
           "translate(" + margin.left + "," + margin.top + ")");
 
 // Parse the Data
-d3.csv("https://raw.githubusercontent.com/madhusivaraj/data-visualization/main/Narrative%20Visualization/data/VaccinationData.csv?token=AJ4IWW5TC7TGHLS2ARVHHN3BBDEE6", function(data) {
+d3.csv("https://raw.githubusercontent.com/madhusivaraj/data-visualization/main/Narrative%20Visualization/data/us-states-overall.csv?token=AJ4IWW6SFK3A3UXP4JUPI5DBBDKCK", function(data) {
 
     data.sort(function(b, a) {
         return a.PercentageVaccinated - b.PercentageVaccinated;
@@ -53,7 +57,7 @@ d3.csv("https://raw.githubusercontent.com/madhusivaraj/data-visualization/main/N
 // X axis
 var x = d3.scaleBand()
   .range([ 0, width ])
-  .domain(data.map(function(d) { return d.State; }))
+  .domain(data.map(function(d) { return d.state; }))
   .padding(0.2);
 svg.append("g")
   .attr("transform", "translate(0," + height + ")")
@@ -74,7 +78,7 @@ svg.selectAll("mybar")
   .data(data)
   .enter()
   .append("rect")
-    .attr("x", function(d) { return x(d.State); })
+    .attr("x", function(d) { return x(d.state); })
     .attr("width", x.bandwidth())
     .attr("fill", "#FFC875")
     // no bar at the beginning thus:
