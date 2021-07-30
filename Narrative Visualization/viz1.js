@@ -18,13 +18,13 @@ var tooltip = d3.select("#my_dataviz")
 
  var mouseover = function(d) {
     var formatDecimal = d3.format(",.3f");
-    var stateName = d.state;
+    var stateName = d.State;
     var EstimatedHesitant = formatDecimal(d.EstimatedHesitant);
-    var rank = d.Rank;
+    var CVACLevelOfConcern = d.CVACLevelOfConcern;
     tooltip
         .html("State: " + stateName
-        + "<br>" + "Vaccination Rank: " + rank
-        + "<br>" + "Estimated Hesitant: " + EstimatedHesitant + "%"
+        + "<br>" + "Vaccine-Hesitant Population Percentage: " + EstimatedHesitant + "%"
+        + "<br>" + "CVAC Level Of Concern: " + CVACLevelOfConcern
         )
         .style("opacity", 1)
   }
@@ -48,7 +48,7 @@ var svg = d3.select("#my_dataviz")
           "translate(" + margin.left + "," + margin.top + ")");
 
 // Parse the Data
-d3.csv("https://raw.githubusercontent.com/madhusivaraj/data-visualization/main/Narrative%20Visualization/data/us-states-overall.csv?token=AJ4IWW6SFK3A3UXP4JUPI5DBBDKCK", function(data) {
+d3.csv("https://raw.githubusercontent.com/madhusivaraj/data-visualization/main/Narrative%20Visualization/data/VaccinationData.csv?token=AJ4IWWYCVLWBFZO34EKUX4TBBXDLQ", function(data) {
 
     data.sort(function(b, a) {
         return a.EstimatedHesitant - b.EstimatedHesitant;
@@ -57,7 +57,7 @@ d3.csv("https://raw.githubusercontent.com/madhusivaraj/data-visualization/main/N
 // X axis
 var x = d3.scaleBand()
   .range([ 0, width ])
-  .domain(data.map(function(d) { return d.state; }))
+  .domain(data.map(function(d) { return d.State; }))
   .padding(0.2);
 svg.append("g")
   .attr("transform", "translate(0," + height + ")")
@@ -68,7 +68,7 @@ svg.append("g")
 
 // Add Y axis
 var y = d3.scaleLinear()
-  .domain([0, 70])
+  .domain([0, 35])
   .range([ height, 0]);
 svg.append("g")
   .call(d3.axisLeft(y));
@@ -78,9 +78,9 @@ svg.selectAll("mybar")
   .data(data)
   .enter()
   .append("rect")
-    .attr("x", function(d) { return x(d.state); })
+    .attr("x", function(d) { return x(d.State); })
     .attr("width", x.bandwidth())
-    .attr("fill", "#FFC875")
+    .attr("fill", "#d93927")
     // no bar at the beginning thus:
     .attr("height", function(d) { return height - y(0); }) // always equal to 0
     .attr("y", function(d) { return y(0); })
